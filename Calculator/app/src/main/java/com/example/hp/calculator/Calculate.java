@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 import static com.example.hp.calculator.StringExam.isOperation;
+import static com.example.hp.calculator.StringExam.killBrackets;
 
 class infinityException extends  Exception{}
 
 public class Calculate {
+
+
+    static String [] forWkl ={" _(:з」∠)_ "," QaQ"," QAQ"," qwq"," OvO"," 0v0"," 0 v 0"," O v O"," ( ˘•灬•˘ )"," 0^0真是可爱"};
 
     private static final Map<String,Integer> basic =new HashMap<>();
     static {
@@ -24,7 +28,15 @@ public class Calculate {
         basic.put("(", 0);
     }
 
-    static List<String> parseString(String source) {//分割数字与操作符    将×与÷后的减号绑定到后面的数字上
+    protected static List<String> parseString(String s,boolean charge) {//分割数字与操作符    将×与÷后的减号绑定到后面的数字上
+        String source = new String(s);
+        if(charge&&source.contains("-(")) {
+            try {
+                source = killBrackets(source);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         List<String> strings = new ArrayList<String>();
         int i=0;
         int j=0;
@@ -48,7 +60,10 @@ public class Calculate {
         for(i = 0 ; i<strings.size()-1;i++){
             if((i==0&&strings.get(0).equals("-"))||(strings.get(i).equals("-")&&(i>0&&(strings.get(i-1).equals("×")
                     ||strings.get(i-1).equals("÷")||strings.get(i-1).equals("^")||strings.get(i-1).equals("("))||strings.get(i-1).equals("+")||strings.get(i-1).equals("-")/*这里可加+、-实现真正的负号*/))){
-                strings.set(i+1,"-"+strings.get(i+1));
+                if(strings.get(i+1).equals("-")==false)//3×-(4-5)
+                    strings.set(i+1,"-"+strings.get(i+1));
+                else
+                    strings.remove(i);
                 strings.remove(i);
                 i = 0;
             }
@@ -103,8 +118,15 @@ public class Calculate {
                         else {BigDecimal bd = new BigDecimal(strings.get(i-2)).divide(bigDecimal,9, RoundingMode.HALF_UP);
                                     strings.set(i-2, String.valueOf((df.format(bd))));}break;
                     case "^"://strings.set(i-2, String.valueOf((new BigDecimal(strings.get(i-2))).pow(Integer.parseInt(strings.get(i-1)))));break;
-                        Double re = Math.pow(Double.parseDouble(strings.get(i-2)),Double.parseDouble(strings.get(i-1)));
-                        strings.set(i-2,String.valueOf(df.format(re)));break;//弱化次方
+                        Double x = Double.parseDouble(strings.get(i-2));
+                        Double y= Double.parseDouble(strings.get(i-1));
+                        if(x==0&&y==0){
+                            int random = (int)(Math.random()*10);
+                            strings.set(i-2,forWkl[random]);
+                        }else{
+                        Double re = Math.pow(x,y);
+                        strings.set(i-2,String.valueOf(df.format(re)));
+                        }break;//弱化次方
                     default:break;
                 }
                 strings.remove(i-1);
@@ -116,7 +138,7 @@ public class Calculate {
     }
 
     public static String arrange(String source) throws Exception{
-        return calculate(infixToPostfix(parseString(source)));
+        return calculate(infixToPostfix(parseString(source,true)));
     }
 
 }

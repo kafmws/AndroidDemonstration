@@ -4,8 +4,10 @@ import android.os.Build;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.hp.calculator.Calculate.arrange;
 import static com.example.hp.calculator.Calculate.parseString;
 
 public abstract class StringExam {
@@ -65,21 +67,30 @@ public abstract class StringExam {
     }
 
     public static String devideByDel(String s){
-        if(s.length()<4)
+        if(s.length()<4||s.charAt(0)==' ')
             return s;
         String [] strings = s.split("\\.");
-        if(strings[0].length()>=4&&strings[0].charAt(0)!='王'){
+        boolean flag = true;
+        for(int i = 0;i<strings[0].length();i++){
+            if(!isNum(strings[0].charAt(i))){
+                flag = false;break;
+            }
+        }
+        if(flag&&strings[0].length()>=4){//&&strings[0].charAt(0)!='王'
             strings[0] = df.format(new BigDecimal(strings[0]));
             if(strings.length == 2){
                 strings[0] = strings[0].concat("."+strings[1]);
+            }else if(s.charAt(s.length()-1) == '.'){
+                strings[0] = strings[0].concat(".");
             }
             return strings[0];
         }
         return s;
     }
 
-    public static String parseStringAndDevideByDel(String source){
-        List<String> strings = parseString(source);
+    public static String parseStringAndDevideByDel(String ss){
+        String source = new String(ss);
+        List<String> strings = parseString(source,false);
 //        for (String s : strings){
 //            if(s.length()>3){
 //                s = devideByDel(s);
@@ -105,6 +116,32 @@ public abstract class StringExam {
         int n = cntBrackets(sb.toString());//处理括号
         while(n--!=0){
             sb.append(')');
+        }
+        return sb.toString();
+    }
+
+
+    public static String killBrackets(String s) throws Exception {
+        String source = new String(s);
+        int leftBracket = source.lastIndexOf("-(")+1;//-1  +1
+        if(leftBracket == 0)return source;
+        int rightBracket = 0;
+        StringBuffer sb = new StringBuffer();
+        while(leftBracket!=0){
+            rightBracket = source.indexOf(')',leftBracket);
+            if(rightBracket == -1)rightBracket = source.length();//定位要处理的括号的下标
+            String firstTarget = arrange(completeString(source.substring(leftBracket+1,rightBracket)));
+            sb = new StringBuffer(source.substring(0,leftBracket));
+//            if(firstTarget.charAt(0)=='-'&&sb.charAt(sb.length()-1)=='-'){
+//                sb.deleteCharAt(sb.length()-1);
+//                firstTarget =firstTarget.substring(1);
+//            }
+            sb.append(firstTarget);
+            if(cntBrackets(sb.toString())>0){
+                sb.append(source.substring(rightBracket+1,source.length()));
+            }
+            leftBracket = sb.lastIndexOf("-(")+1;
+            source = sb.toString();
         }
         return sb.toString();
     }

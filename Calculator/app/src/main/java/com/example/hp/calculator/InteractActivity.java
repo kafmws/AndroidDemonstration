@@ -18,6 +18,7 @@ public class InteractActivity extends AppCompatActivity implements View.OnClickL
     private TextView edit_screen;
     private TextView result_screen;
     private String s = new String();
+    private boolean flag = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +48,13 @@ public class InteractActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-
         int textLen = text.length();
         switch (view.getId()){
             case R.id.btn_0:
+                if(flag){
+                    text = new StringBuffer();
+                    textLen = 0;
+                }
                 if(textLen==0||text.charAt(textLen-1)!=')')
                     text.append('0');
                 break;
@@ -63,6 +67,10 @@ public class InteractActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_7:
             case R.id.btn_8:
             case R.id.btn_9:
+                if(flag){
+                    text = new StringBuffer();
+                    textLen = 0;
+                }
                 if(textLen==0||text.charAt(textLen-1)!=')')
                     text.append((char) ('1'+view.getId()-0x7f070023));
                 break;
@@ -100,7 +108,7 @@ public class InteractActivity extends AppCompatActivity implements View.OnClickL
                     if(text.charAt(1)!='-')
                         text.append('-');
                 }
-                else if(text.charAt(textLen-1)!='.'&&cntCharacter(text.toString())<2)
+                else if(text.charAt(textLen-1)!='.'&&cntCharacter(text.toString())<2||(cntCharacter(text.toString())==2&&(text.charAt(textLen-1)!='-'&&text.charAt(textLen-2)!='-'))||text.charAt(textLen-1)=='(')
                     text.append('-');
 //                if(textLen>0){
 //                    Toast.makeText(this,String.valueOf(text.charAt(textLen-1)!='.'&&cntCharacter(text.toString())<=2||(textLen==1&&text.charAt(textLen-1)!='-')),Toast.LENGTH_SHORT).show();
@@ -132,26 +140,28 @@ public class InteractActivity extends AppCompatActivity implements View.OnClickL
                     s="";
                 break;
             case R.id.btn_calculate:
-//                try{
-                text = new StringBuffer(s);
-                if(s.equals("520")||s.equals("521")||s.equals("1314")||s.equals("5201314")){
-                    edit_screen.setTextSize(36);
-                    edit_screen.setTextColor(getApplicationContext().getResources().getColor(R.color.likeYou));
-                    result_screen.setTextColor(getApplicationContext().getResources().getColor(R.color.likeYou));
-                    s = "王凯丽❤";
-                    Toast.makeText(this,"by kafm",Toast.LENGTH_SHORT).show();
-                    edit_screen.setTextSize(60);
+                if(!edit_screen.getText().equals(result_screen.getText())){
+                    flag = true;}
+                try{
+                    text = new StringBuffer(s);
+                    if(s.equals("520")||s.equals("521")||s.equals("1314")||s.equals("5201314")){
+                        edit_screen.setTextSize(36);
+                        edit_screen.setTextColor(getApplicationContext().getResources().getColor(R.color.likeYou));
+                        result_screen.setTextColor(getApplicationContext().getResources().getColor(R.color.likeYou));
+                        s = "王凯丽❤";
+                        Toast.makeText(this,"by kafm",Toast.LENGTH_SHORT).show();
+                    }
+                    edit_screen.setText(devideByDel(s));
+                    result_screen.setText("");
+                } catch (Exception e){
+                    edit_screen.setText("bug發現,請聯繫開發者kafm。QQ1002605741");
+                    text = new StringBuffer();
+                    s = "";
                 }
-                edit_screen.setText(devideByDel(s));
-                result_screen.setText("");
-//                } catch (Exception e){
-//                    edit_screen.setText("bug發現,請聯繫開發者kafm。QQ1002605741");
-//                    text = new StringBuffer();
-//                    s = "";
-//                }
                 break;
         }
         if(view.getId()!=R.id.btn_calculate){
+            flag = false;
 //            String tem = devideByDel();
             edit_screen.setText(parseStringAndDevideByDel(text.toString()));//可用正则表达式优化
             if(text.length()>0)
@@ -162,7 +172,7 @@ public class InteractActivity extends AppCompatActivity implements View.OnClickL
                 } catch (infinityException e) {
                     s = "∞";
                 } catch (Exception e) {
-                    s="error";
+
                 }
             }
             result_screen.setText(devideByDel(s));
