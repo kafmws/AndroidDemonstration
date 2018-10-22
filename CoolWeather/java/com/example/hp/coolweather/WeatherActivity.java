@@ -3,6 +3,7 @@ package com.example.hp.coolweather;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -107,8 +108,10 @@ public class WeatherActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
+                Looper.prepare();
                 Toast.makeText(WeatherActivity.this,"噫，图片加载出了点问题"
                         ,Toast.LENGTH_SHORT).show();
+                Looper.loop();
             }
 
             @Override
