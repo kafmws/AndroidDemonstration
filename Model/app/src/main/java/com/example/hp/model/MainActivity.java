@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.hp.model.QRCodeProducer.getDeviceQRCode;
+
 public class MainActivity extends AppCompatActivity {
 
     private static boolean ACTIVE_FLAG;
@@ -65,12 +67,13 @@ public class MainActivity extends AppCompatActivity {
         btn_cmp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                compare();
+                compare(bitmapLeft, bitmapRight);
             }
         });
+        iv_left.setImageBitmap(getDeviceQRCode(this));
     }
 
-    private void compare() {
+    private void compare(Bitmap bitmapLeft, Bitmap bitmapRight) {
 
 //        FaceEngine engine = new FaceEngine();
 
@@ -163,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
             int errorCode = engine.active(this,ArcAppId,ArcSdkKey);
             if(errorCode!=ErrorInfo.MOK) {//激活失败
                 Log.e("com.arcsoft", "AFR_FSDK_FailToActive : " + errorCode);
-                    Log.e("com.arcsoft","really denied");
                 Toast.makeText(this, "激活失败", Toast.LENGTH_SHORT).show();
             }else{//更新激活状态
                 SharedPreferences.Editor editor = sp.edit();
