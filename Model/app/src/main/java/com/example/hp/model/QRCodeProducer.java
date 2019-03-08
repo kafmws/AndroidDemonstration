@@ -154,7 +154,7 @@ public class QRCodeProducer {
                 String imei = telephonyManager.getDeviceId();
                 return imei == null ? "" : imei;
             }
-            //在次做个验证，也不是什么时候都能获取到的啊
+            //检查是否获取成功
         } catch (Exception e) {
             e.printStackTrace();
             return "";

@@ -106,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
         Log.e("com.arcsoft", "detectRightFaces = " + errorCode);
 
         if(faceLeft.size()!=1||faceRight.size()!=1){
-            Toast.makeText(this,"请上传单人照片",Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this,"请上传单人照片",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"faceLeft = " + faceLeft.size() + "faceRight = " + faceRight.size()
+                    ,Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -162,6 +164,10 @@ public class MainActivity extends AppCompatActivity {
                     ==PermissionChecker.PERMISSION_DENIED){
                 ActivityCompat.requestPermissions(this,
                         new String[]{"android.permission.READ_PHONE_STATE"}, 1);
+            }
+            if(PermissionChecker.checkSelfPermission(this,"android.permission.READ_PHONE_STATE")
+                    ==PermissionChecker.PERMISSION_DENIED){
+                this.finish();
             }
             int errorCode = engine.active(this,ArcAppId,ArcSdkKey);
             if(errorCode!=ErrorInfo.MOK) {//激活失败
@@ -222,4 +228,5 @@ public class MainActivity extends AppCompatActivity {
                     break;
         }
     }
+
 }
